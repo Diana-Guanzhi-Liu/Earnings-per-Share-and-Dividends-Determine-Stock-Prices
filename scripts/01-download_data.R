@@ -1,26 +1,14 @@
 #### Preamble ####
-# Purpose: Downloads and saves the data from [...UPDATE THIS...]
-# Author: Rohan Alexander [...UPDATE THIS...]
-# Date: 11 February 2023 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
-# License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
+# Purpose: Downloads and saves the data from WRDS Database
+# Author: Diana Liu
+# Date: 2023 March 8
+# Contact: guanzhi.liu@mail.utoronto.ca
 
 
-#### Workspace setup ####
-library(opendatatoronto)
-library(tidyverse)
-# [...UPDATE THIS...]
-
-#### Download data ####
-# [...ADD CODE HERE TO DOWNLOAD...]
-
-
-
-#### Save data ####
-# [...UPDATE THIS...]
-# change the_raw_data to whatever name you assigned when you downloaded it.
-write_csv(the_raw_data, "inputs/data/raw_data.csv") 
-
-         
+#### Download Financial Statement Data ####
+# Log in to Warton Research Data Services
+# Select Compustat - Capital IQ, North America, Fundamentals Quarterly
+# Query for 2014 January to 2024 January, Ticker Symbol (tic), entire database
+# Select price close, net income, dividends, earnings per share, company name
+# Submit query
+# Download resulting csv package
