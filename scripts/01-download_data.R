@@ -7,7 +7,7 @@
 
 #### Download Financial Statement Data ####
 # Log in to Warton Research Data Services
-# Select Compustat - Capital IQ, North America, Fundamentals Quarterly
+# Select Compustat - Capital IQ, North America, Fundamentals Annual
 # Query for 2014 January to 2024 January, Ticker Symbol (tic), entire database
 # Select price close, net income, dividends, earnings per share, company name
 # Submit query
