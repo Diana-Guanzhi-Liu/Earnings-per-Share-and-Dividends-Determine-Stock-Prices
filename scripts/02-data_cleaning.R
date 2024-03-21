@@ -5,13 +5,16 @@
 # Contact: guanzhi.liu@mail.utoronto.ca
 # Pre-requisites: download the data
 
+
 #### Workspace setup ####
 library(tidyverse)
 library(dplyr)
+#install.packages("arrow")
+library(arrow)
 
 #### Clean data ####
 #Read in data and save as a data frame
-raw_data <- read_csv("inputs/data/raw_data.csv")
+raw_data <- read_parquet("inputs/data/raw_data.parquet")
 raw_data <- as.data.frame(raw_data)
 
 #Rename variables so they are easier to understand, select the ones needed, and
@@ -33,4 +36,4 @@ cleaned_data <- na.omit(cleaned_data)
 head(cleaned_data)
 
 #### Save data ####
-write_csv(cleaned_data, "outputs/data/analysis_data.csv")
+write_parquet(cleaned_data, "outputs/data/analysis_data.parquet")
