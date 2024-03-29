@@ -11,6 +11,7 @@ abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
 format: pdf
 number-sections: true
 bibliography: references.bib
+toc: true
 ---
 
 ```{r}
@@ -19,7 +20,6 @@ bibliography: references.bib
 #| message: false
 
 library(tidyverse)
-library(palmerpenguins)
 library(arrow)
 library(modelsummary)
 library(bayesplot)
@@ -27,6 +27,8 @@ library(broom)
 library(gridExtra)
 library(rstanarm)
 library(knitr)
+#
+library(gt)
 ```
 
 
@@ -38,24 +40,38 @@ The remainder of this paper is structured as follows. @sec-data....
 
 
 
-# Data {#sec-data}
+# Data
+Public companies whose stock are traded on exchanges, must disclose certain financial metrics in their quarterly and yearly financial statements. Investors then use these metrics to help inform their decision when selecting companies to invest in. Some of the most important metrics investors look at are Earnings Per Share, Net Income, and Dividends [@CiteShakespeare]. Investments take the form of buying shares or stocks which allows the investor to own a fraction of the company.
 
-Some of our data is of penguins (@fig-bills), from @palmerpenguins.
+The data used for analysis is obtained through Walton Research Data Services (WRDS) by the University of Pennsylvania. WRDS provides access to Compustat, a database of financial, statistical, and market information on global companies since 1962. Our data comes from Compustat's North America Fundamentals Annual database, which contains both financial data from all public North American companies, collected by Compustat from each company's annual financial statements or from stock exchanges (@fig-Analysis-Data-Sample). This Data is cleaned and analysed in @CiteR with assistance from @CiteTidy, @CiteArrow, @CiteModelsummary, @CiteBayesplot, @CiteBroom, @CiteGridextra, @CiteRstanarm, and @CiteKnitr.
 
 ```{r}
-#| label: fig-sample
-#| fig-cap: Bills of penguins
+#| label: fig-Analysis-Data-Sample
+#| fig-cap: Data from Compustat North America Fundamentals Annual. EPS, Dividends, and Net Income are financial statement data while Price are stock exchange data, and Year and Tic can be found on both.
 #| echo: false
 
 analysis_data <- read_parquet(here::here("outputs/data/analysis_data.parquet"))
 kable(head(analysis_data))
 ```
 
+## Financial Statement Data
+Earnings per share, net income, and dividends are items that are found on financial statements. Specifically, EPS and net income can be found on the income statement while dividends can be found on the statement of retained earnings. This data is likely unbiased and free from error as financial statements are required by law to be audited (verified by an independent third party).
+
+EPS is a commonly used measure of a given company's value in USD; it is calculated as net income divided by the number of shares of stock. A higher EPS indicates greater value as investors are willing to pay more for a company's shares if they think the company has higher profits relative to its share price [@CiteShakespeare]. We expect earnings to be positively correlated with stock price.
+
+Net income is used to measure profitability in USD or how much income the company gets to keep after expenses are paid for. Higher net income means that the company is profitable by either earning more revenues or reducing expenses. Net income is expected to be positively correlated with price as investors want to invest in companies that are more profitable.
+
+## Stock Exchange Data
+The price is the amount that each share costs to buy, it is determined by supply and demand for a company. For example, if investors believe a company is profitable, they will buy shares with the goal of eventually sharing in said profit, increasing demand and driving up share price.
+
+
 
 ```{r}
-#| label: fig-bills
+#| label: fig-distributions
 #| fig-cap: Bills of penguins
 #| echo: false
+#| warning: false
+#| message: false
 
 distribution_price <-
   ggplot(analysis_data, aes(x = Price)) +
@@ -77,7 +93,7 @@ distribution_Net_Income <-
   geom_histogram() +
   theme_minimal()
 
-grid.arrange(distribution_price, distribution_EPS, distribution_Net_Income, distribution_Dividends, nrow = 2)
+grid.arrange(distribution_EPS, distribution_Net_Income, distribution_Dividends, ncol = 3)
 ```
 
 Talk more about it.
@@ -85,12 +101,24 @@ Talk more about it.
 And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
 
 ```{r}
-#| include:false
+#| echo: false
+#| eval: true
+#| label: tbl-summary-statistics
+#| tbl-cap: " "
+#| warning: false
 
-summary(analysis_data$Price)
-summary(analysis_data$EPS)
-summary(analysis_data$Net_Income)
-summary(analysis_data$Dividends)
+earnings_per_share <- unclass(summary(analysis_data$EPS, digits = 3))
+net_income <- unclass(summary(analysis_data$Net_Income, digits = 7))
+dividends <- unclass(summary(analysis_data$Dividends, digits = 6))
+price <- unclass(summary(analysis_data$Price, digits = 5))
+summary <- data.frame(earnings_per_share, net_income, dividends, price, check.names = FALSE, stringsAsFactors = FALSE)
+
+summary_stats <- c("Min", "1st Quartile", "Median", "Mean", "3rd Quartile", "Max")
+summary <-
+  cols_add(gt(summary), summary_stats) |>
+  cols_move_to_start(summary_stats)
+
+tab_footnote(summary, "Note: ")
 ```
 
 
