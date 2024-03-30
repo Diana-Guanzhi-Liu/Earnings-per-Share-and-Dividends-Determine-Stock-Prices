@@ -24,8 +24,7 @@ largest_companies <- c("MSFT", "AAPL", "NVIDIA", "GOOGL", "AMZN", "META",
                        "TMUS", "GE", "QCOM", "DHR", "INTU", "CAT", "INTC",
                        "IBM", "VZ", "AMAT", "CMCSA", "UBER", "AXP")
 
-#Rename variables so they are easier to understand, select the ones needed, and
-#round to two decimal places
+#Rename variables so they are easier to understand, select the ones needed
 cleaned_data <-
   raw_data |>
   rename("Year" = fyear, "Tic" = tic, "Dividends" = dvc, "EPS" = epsfi, 
@@ -40,6 +39,12 @@ cleaned_data <-
 cleaned_data <-
   cleaned_data |> filter(Tic %in% largest_companies)
 
+#Create binary variable for dividends
+cleaned_data$Paid_Dividend <- case_when(
+  cleaned_data$Dividends > 0 ~ "Yes", 
+  cleaned_data$Dividends == 0 ~ "No")
+
+#round to two decimal places
 cleaned_data$Dividends = round(cleaned_data$Dividends, 2)
 cleaned_data$EPS = round(cleaned_data$EPS, 2)
 cleaned_data$Net_Income = round(cleaned_data$Net_Income, 2)

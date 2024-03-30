@@ -32,6 +32,7 @@ library(gt)
 ```
 
 
+
 # Introduction
 
 You can and should cross-reference sections and sub-sections. 
@@ -47,6 +48,7 @@ The data used for analysis is obtained through Walton Research Data Services (WR
 
 Similar data sets exist, but WRDS was selected because it hosts the most robust collection in terms of variables and its infrastructure allows users to easily query specific items.
 
+
 ```{r}
 #| label: fig-Analysis-Data-Sample
 #| fig-cap: Data from Compustat North America Fundamentals Annual. EPS, Dividends, and Net Income are financial statement data while Price are stock exchange data, and Year and Tic can be found on both.
@@ -55,6 +57,7 @@ Similar data sets exist, but WRDS was selected because it hosts the most robust 
 analysis_data <- read_parquet(here::here("outputs/data/analysis_data.parquet"))
 kable(head(analysis_data))
 ```
+
 
 ## Financial Statement Data
 Net income, EPS, and dividends are items that are found on financial statements. Specifically, EPS and net income can be found on the income statement while dividends can be found on the statement of retained earnings. This data is likely unbiased and free from error as financial statements are required by law to be audited (verified by an independent third party).
@@ -67,6 +70,7 @@ Dividends are distributions of a company's income to the owners of its stock in 
 
 Year is the year in which the financial statement information is released.
 
+
 ```{r}
 #| include: false
 
@@ -76,10 +80,12 @@ analysis_data %>% filter(Paid_Dividend == "Yes") %>% nrow()
 analysis_data %>% filter(Paid_Dividend == "Yes") %>% nrow()/count(analysis_data)
 ```
 
+
 ## Stock Exchange Data
 The price is the amount that each share costs to buy, it is determined by supply and demand for a company. For example, if investors believe a company is profitable, they will buy shares with the goal of eventually sharing in said profit, increasing demand and driving up share price. Share price is normally distributed with median of 113.91 USD and mean of 6.2. The most expensive stock was Amazon (AMZN) which was worth 3334.34 USD in 2021, and the cheapest stock was Advanced Micro Devices, Inc. (AMD) which was worth 2.67 in 2014.
 
 Tic 
+
 
 ```{r}
 #| echo: false
@@ -132,6 +138,7 @@ distribution_Net_Income <-
 grid.arrange(distribution_price, distribution_EPS, distribution_Net_Income, distribution_Dividends, ncol = 2)
 ```
 
+
 Talk more about it.
 
 And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
@@ -143,6 +150,7 @@ And also planes (@fig-planes). (You can change the height and width, but don't w
 
 
 Talk way more about it. 
+
 ```{r}
 #| label: tbl-honkers
 #| fig-cap: Relationship between me and ur mom
@@ -210,6 +218,7 @@ grid.arrange(best_fit_net_income, best_fit_dividends, best_fit_eps, ncol = 2)
 
 
 
+
 # Model
 
 The goal of our modelling strategy is twofold. Firstly,...
@@ -245,6 +254,7 @@ We can use maths by including latex between dollar signs, for instance $\theta$.
 # Results
 
 Our results are summarized in @tbl-modelresults.
+
 
 
 
@@ -353,7 +363,6 @@ base +
 
 ```
 
-
 ```{r}
 #| echo: false
 #| eval: true
@@ -376,8 +385,6 @@ modelsummary(
 )
 ```
 
-
-
 ```{r}
 #| include: false
 #| eval: true
@@ -399,8 +406,6 @@ saveRDS(
 )
 ```
 
-
-
 ```{r}
 #| include: false
 #| eval: true
@@ -421,6 +426,7 @@ saveRDS(
   file = "model_rstanarm_2.rds"
 )
 ```
+
 
 
 
@@ -462,6 +468,7 @@ Weaknesses and next steps should also be included.
 In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
 
 In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
+
 
 ```{r}
 #| include: false
@@ -518,6 +525,7 @@ posterior_vs_prior(model_rstanarm_2) +
 ```
 
 
+
 ## Diagnostics
 
 @fig-stanareyouokay-1 is a trace plot. It shows... This suggests...
@@ -545,5 +553,6 @@ plot(model_rstanarm_2, "rhat")
 
 
 # References
+
 
 
