@@ -1,9 +1,7 @@
 ---
 title: "My title"
-subtitle: "My subtitle if needed"
-author: 
-  - First author
-  - Another author
+subtitle: "Analysis of the Relationship Between Stock Price and EPS & Dividends of the Largest 50 North American Companies over 10 Years"
+author: Diana Liu
 thanks: "Code and data are available at: LINK."
 date: today
 date-format: long
@@ -11,7 +9,6 @@ abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
 format: pdf
 number-sections: true
 bibliography: references.bib
-toc: true
 ---
 
 ```{r}
@@ -29,6 +26,7 @@ library(rstanarm)
 library(knitr)
 #
 library(gt)
+library(grDevices)
 ```
 
 
@@ -49,7 +47,7 @@ Similar data sets exist, but WRDS was selected because it hosts the most robust 
 
 ```{r}
 #| label: fig-Analysis-Data-Sample
-#| fig-cap: Data from Compustat North America Fundamentals Annual. EPS, Dividends, and Net Income are financial statement data while Price are stock exchange data, and Year and Tic can be found on both.
+#| fig-cap: "Data from Compustat North America Fundamentals Annual. EPS, Dividends, and Net Income are financial statement data while Price are stock exchange data, and Year and Tic can be found on both."
 #| echo: false
 
 analysis_data <- read_parquet(here::here("outputs/data/analysis_data.parquet"))
@@ -61,11 +59,29 @@ Net income, EPS, and dividends are items that are found on financial statements.
 
 Net income is used to measure profitability or how much income the company keeps after expenses are paid. Higher net income means that the company is profitable by either earning more revenues or reducing expenses. Net income is expected to be positively correlated with price as investors want to invest in companies that are more profitable. Net income can be negative when the company has lost money. In our data set, it is measured in millions USD (x10^6). Net income is normally distributed with median of 7120M USD and right skew, mean of 11752 (@fig-distributions). Apple (AAPL) had the highest net income in the data set of 99803 achieved in 2022, and Berkshire Hathaway (BRK.B) had the lowest of -22819 in the same year (@tbl-summary-statistics).
 
-EPS is a commonly used measure of a given company's value in USD; it is calculated as net income divided by the number of shares of stock. A higher EPS indicates greater value as investors are willing to pay more for a company's shares if they think the company has higher profits relative to its share price [@CiteShakespeare]. We expect earnings to be positively correlated with stock price. It is normally distributed and right skewed, with median 4.56 and mean 6.2 (@fig-distributions). Google (GOOGL) had the highest EPS of 112.2 in 2021, and Tesla (TSLA) had the lowest of -11.83 in 2017, meaning for each share Tesla lost 11.83 USD (@tbl-summary-statistics).
+```{r}
+#| label: fig-EPS-boxplot
+#| fig-cap: "Boxplots of EPS grouped by dividends"
+#| echo: false
+EPS_boxplot <-
+  analysis_data |> 
+  ggplot(aes(x = Paid_Dividend, y = EPS)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(x = "Dividends Paid",
+       y = "EPS")
 
-Dividends are distributions of a company's income to the owners of its stock in USD. It can be measured as dividends per share, but in the data set it is total dividends. Some companies choose not to pay dividends if they can use their income to reinvest into valuable projects, approximately 78% of companies in our data set paid dividends. We might expect dividends to be positively correlated with stock price because investors desire an additional payment, but the opposite. This is because dividends paid out to shareholders is value that is taken out of the company, causing price which should be a reflection of the firm's value to decrease. The largest dividend in the data set was 25999 USD paid by Caterpillar (CAT) in 2023.
+ylim1 = boxplot.stats(analysis_data$EPS)$stats[c(1, 5)]
+EPS_boxplot = EPS_boxplot + coord_cartesian(ylim = ylim1*1.05)
+EPS_boxplot
 
-Year is the year in which the financial statement information is released.
+```
+
+EPS is a commonly used measure of a given company's value in USD; it is calculated net income divided by the number of shares. It is normally distributed and right skewed, with median 4.56 USD and mean 6.2 (@fig-distributions). Google (GOOGL) had the highest EPS of 112.2 in 2021, and Tesla (TSLA) had the lowest of -11.83 in 2017, meaning for each share Tesla lost 11.83 USD (@tbl-summary-statistics).
+
+Dividends are distributions of a company's income to the owners of its stock in USD. Some companies choose not to pay dividends if they can use their income to reinvest into valuable projects. For our analysis we created a binary variable for whether or not a company paid dividends, with any amount greater than zero dollars being Yes. Approximately 78% of companies in our data set paid dividends, the largest of which was 25999 USD paid by Caterpillar (CAT) in 2023.
+
+EPS of companies that did not pay dividends has a larger interquartile range than EPS of companies that paid dividends (@fig-EPS-boxplot). This means that the observations for companies that paid dividends are more clustered together, likely resulting in smaller standard deviation. The mean and median EPS of companies that paid dividends is also higher, suggesting that paying dividends is correlated with having higher EPS (@fig-EPS-boxplot), this makes sense as companies that are profitable enough to have high EPS also have more income to pay out dividends. 
 
 ```{r}
 #| include: false
@@ -79,7 +95,7 @@ analysis_data %>% filter(Paid_Dividend == "Yes") %>% nrow()/count(analysis_data)
 ## Stock Exchange Data
 The price is the amount that each share costs to buy, it is determined by supply and demand for a company. For example, if investors believe a company is profitable, they will buy shares with the goal of eventually sharing in said profit, increasing demand and driving up share price. Share price is normally distributed with median of 113.91 USD and mean of 6.2. The most expensive stock was Amazon (AMZN) which was worth 3334.34 USD in 2021, and the cheapest stock was Advanced Micro Devices, Inc. (AMD) which was worth 2.67 in 2014.
 
-Tic 
+Tic refers to the ticker symbol of each stock. It is a unique string of one to five characters used to denote a particular company's stock so that investors know whose stock are being traded on international exchanges across different languages. Some tick symbols are similar to the name of the company like AAPL for Apple and GOOGL for Google, but this is not always the case, for example American Express is AXP and Coca-cola is KO. 
 
 ```{r}
 #| echo: false
@@ -132,39 +148,90 @@ distribution_Net_Income <-
 grid.arrange(distribution_price, distribution_EPS, distribution_Net_Income, distribution_Dividends, ncol = 2)
 ```
 
-Talk more about it.
 
-And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
+# Model
 
+The goal of our model is to determine the relationship between EPS and stock price first with a simple linear model. Then we add a binary variable of whether the company paid dividends or not to determine the effect dividends have on this relationship. Background details and diagnostics are included in [Appendix -@sec-model-details].
 
+## Model set-up
+In the first model, we define $y_i$ as the stock price, $X_1$ as earnings per share, a continuous variable. $\beta_0$ is the intercept term, and $\beta_1$ is the coefficient for change in the stock price per dollar increase in EPS. $\epsilon$ denotes the noise or deviations.
 
+\begin{align}
+&Simple\ Model \\
+&Y_i = \beta_0 + \beta_1X_1 + \epsilon \\
+\end{align}
 
+In the second model, we add $X_2$ as a binary variable where yes signifies that a company paid dividends, and $\beta_2$ is the coefficient for change in stock price if dividends were paid.
+ 
+\begin{align} 
+&Multivariable\ Model \\
+&Y_i = \beta_0 + \beta_1X_1 + \beta_2X_2 + \epsilon \\
+\end{align}
 
+### Model justification
+We expect a positive linear relationship between EPS and stock price. This is because a higher EPS indicates greater value and investors should be willing to pay more for a company's shares if they think the company has higher profits relative to its share price. If a company has high EPS, they have greater amount of profit after expenses have been paid. Investors want to own profitable companies, so demand for this company's stock increases, driving up price as the number of stocks that are available to be bought remains the same. The opposite is true for unprofitable companies, if EPS is low or negative, investors may choose to sell off their shares even at a loss in order to prevent further losses should the stock price keep falling (@fig-bestfit). 
 
+One might expect dividends to be positively correlated with stock price because investors desire an additional payment, but the opposite is true. This is because dividends paid out to shareholders is value that is taken out of the company, causing price, a reflection of the firm's value, to decrease (@fig-bestfit).
 
-Talk way more about it. 
+We expect the effects of EPS and dividends to interact with each other, creating two potential outcomes for change in price. Companies that did not pay dividends are expected to have a larger increase in price for every additional dollar of EPS than companies that paid dividends.
+
+# Results
 ```{r}
-#| label: tbl-honkers
-#| fig-cap: Relationship between me and ur mom
+#| include: false
+#| eval: true
+#| warning: false
+model_rstanarm_1 <-
+  stan_glm(
+    formula = Price ~ EPS,
+    data = analysis_data,
+    family = gaussian(),
+    prior = normal(location = 0, scale = 2.5),
+    prior_intercept = normal(location = 0, scale = 2.5),
+    prior_aux = exponential(rate = 1),
+    seed = 12345
+  )
+
+saveRDS(
+  model_rstanarm_1,
+  file = "model_rstanarm_1.rds"
+)
+```
+
+```{r}
+#| include: false
+#| eval: true
+#| warning: false
+model_rstanarm_2 <-
+  stan_glm(
+    formula = Price ~ EPS + Paid_Dividend,
+    data = analysis_data,
+    family = gaussian(),
+    prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
+    prior_intercept = normal(0, 2.5, autoscale = TRUE),
+    prior_aux = exponential(rate = 1, autoscale = TRUE),
+    seed = 12345
+  )
+
+saveRDS(
+  model_rstanarm_2,
+  file = "model_rstanarm_2.rds"
+)
+```
+
+```{r}
+#| include: false
+#| eval: true
+
+summary(model_rstanarm_1) 
+summary(model_rstanarm_2)
+```
+
+```{r}
 #| echo: false
 #| warning: false
 #| message: false
-
-base_net_income_plot <-
-  analysis_data |> 
-  ggplot(aes(x = Net_Income, y = Price)) +
-  geom_point(alpha = 0.5) +
-  theme_minimal() +
-  labs(x = "Net Income",
-       y = "Stock Price")
-
-base_dvidends_plot <-
-  analysis_data |> 
-  ggplot(aes(x = Dividends, y = Price)) +
-  geom_point(alpha = 0.5) +
-  theme_minimal() +
-  labs(x = "Dividends",
-       y = "Stock Price")
+#| label: fig-bestfit
+#| fig-cap: "Relationship between variables EPS and stock price"
 
 base_eps_plot <-
   analysis_data |> 
@@ -174,8 +241,7 @@ base_eps_plot <-
   labs(x = "EPS",
        y = "Stock Price")
 
-best_fit_net_income <-
-  base_net_income_plot +
+base_eps_plot +
   geom_smooth(
     method = "lm",
     se = TRUE,
@@ -183,157 +249,42 @@ best_fit_net_income <-
     linetype = "dashed",
     formula = "y ~ x"
   )
-
-best_fit_dividends <-
-  base_dvidends_plot +
-  geom_smooth(
-    method = "lm",
-    se = TRUE,
-    color = "black",
-    linetype = "dashed",
-    formula = "y ~ x"
-  )
-
-best_fit_eps <-
-  base_eps_plot +
-  geom_smooth(
-    method = "lm",
-    se = TRUE,
-    color = "black",
-    linetype = "dashed",
-    formula = "y ~ x"
-  )
-
-grid.arrange(best_fit_net_income, best_fit_dividends, best_fit_eps, ncol = 2)
-
 ```
 
-
-
-# Model
-
-The goal of our modelling strategy is twofold. Firstly,...
-
-Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
-
-## Model set-up
-
-Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.  
-
-Simple Model
-\begin{align} 
-y &= \beta_0 + \beta_1X + \epsilon \\
-Y &\sim \mbox{Normal}(\beta, \sigma^2)
-\end{align}
-Where Y is the stock price and X is earnings per share.
-
-We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use the default priors from `rstanarm`.
-
-Multivariable Model
-\begin{align} 
-y &= \beta_0 + \beta_1X_1 + \beta_2X_2 - \beta_3X_3 + \epsilon \\
-Y &\sim \mbox{Normal}(\beta, \sigma^2)
-\end{align}
-Where X1 is EPS, X2 is net income, and X3 is dividends.
-
-### Model justification
-We expect a positive relationship between the size of the wings and time spent aloft. In particular...
-
-We can use maths by including latex between dollar signs, for instance $\theta$.
-
-
-# Results
-
-Our results are summarized in @tbl-modelresults.
-
-
+In model 1, only the relationship between the dependent variable price and predictor variable EPS is analyzed. In the first column of @tbl-modelresults, we have a intercept of -124.69 with standard deviation of 7.1 and coefficient of 21.79 with S.D. 1.1. The coefficient term $\beta_1$ which shows the increase in price for every dollar increase in EPS can be observed from @fig-bestfit as the dashed line with standard error as the shaded area around the dashed line. Positive slope and coefficient show a positive relationship between EPS and stock price.
 
 ```{r}
 #| echo: false
 #| eval: true
-#| label: tbl-modelresults
-#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
+#| label: fig-boxplot
+#| fig-cap: "Boxplots of stock price grouped by whether or not dividends were paid."
 #| warning: false
 
-first_model <-
-  lm(
-    Price ~ EPS,
-    data = analysis_data
-  )
+dividends_plot <-
+  analysis_data |> 
+  ggplot(aes(x = Paid_Dividend, y = Price)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(x = "Dividends Paid",
+       y = "Stock Price")
 
-modelsummary(list("Net_Income" = first_model))
+ylim1 = boxplot.stats(analysis_data$Price)$stats[c(1, 5)]
+dividends_plot = dividends_plot + coord_cartesian(ylim = ylim1*1.05)
+dividends_plot
 ```
 
 ```{r}
 #| echo: false
 #| eval: true
-#| label: tbl-poopy but hole
-#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
-#| warning: false
-
-analysis_data <-
-  augment(
-    first_model,
-    data = analysis_data
-  )
-
-distribution_residuals <-
-  ggplot(analysis_data, aes(x = .resid)) +
-  geom_histogram(binwidth = 1) +
-  theme_classic() +
-  labs(y = "Number of occurrences", x = "Residuals")
-
-residuals_eps <-
-  ggplot(analysis_data, aes(x = EPS, y = .resid)) +
-  geom_point() +
-  geom_hline(yintercept = 0, linetype = "dotted", color = "grey") +
-  theme_classic() +
-  labs(y = "Residuals", x = "Earnings Per Share")
-
-residuals_price <-
-  ggplot(analysis_data, aes(x = Price, y = .resid)) +
-  geom_point() +
-  geom_hline(yintercept = 0, linetype = "dotted", color = "grey") +
-  theme_classic() +
-  labs(y = "Residuals", x = "Stock Price")
-
-estimated_vs_actual <-
-  ggplot(analysis_data, aes(x = Price, y = .fitted)) +
-  geom_point() +
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
-  theme_classic() +
-  labs(y = "Estimated Stock Price", x = "Actual Stock Price")
-
-grid.arrange(distribution_residuals, residuals_eps, residuals_price, estimated_vs_actual, nrow = 2)
-
-```
-
-```{r}
-#| echo: false
-#| eval: true
-#| label: tbl-
-#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
-#| warning: false
-
-ggplot(analysis_data,aes(y=Price,x=EPS,color=Net_Income)) +
-geom_point() +
-stat_smooth(method="lm",se=FALSE)+
-theme_classic() 
-
-```
-
-```{r}
-#| echo: false
-#| eval: true
-#| label: tbl-boobies
-#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
+#| label: fig-model-2
+#| fig-cap: "Linear regression "
 #| warning: false
 
 base <-
   analysis_data |>
   ggplot(aes(x = EPS, y = Price)) +
   labs(
-    x = "Earnings Per Share",
+    x = "EPS",
     y = "Price"
   ) +
   theme_classic() +
@@ -349,78 +300,30 @@ base +
     formula = "y ~ x"
   ) +
   labs(color = "Paid Dividends")
-
-
 ```
+
+In model 2, we introduce dividends as an additional predictor variable. Stocks that paid dividends have median price around 100, significantly lower than stocks that paid no dividends with median price around 175 (@fig-boxplot), demonstrating a negative relationship between paying dividends and stock price. The second column of @tbl-modelresults shows that the new intercept is 172.05 USD, and that the coefficient of paying dividends $\beta_2$ is -177.85. EPS of companies that paid dividends has intercept of 172.05 and coefficient of 25.59 (@tbl-modelresults). The new standard deviation for EPS is 1.0 and 21.6 for dividends. 
+
+The effects on price from EPS and dividends can be further observed in @fig-model-2 where the observations and line of best fit are colored blue to indicate that dividends were paid and red if not. EPS without dividends (red line) has very similar slope and coefficient as @fig-bestfit, and EPS with dividends (blue line) is below it and significantly shorter.
 
 
 ```{r}
 #| echo: false
 #| eval: true
-#| label: tbl-uuhhhh
-#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
+#| label: tbl-modelresults
+#| tbl-cap: "Effect of earnings per share and dividends on stock price."
 #| warning: false
-
-multi_model <-
-  lm(
-    Price ~ EPS + Paid_Dividend,
-    data = analysis_data
-  )
 
 modelsummary(
   list(
-    "EPS Only" = first_model,
-    "With Dividends" = multi_model
+    "EPS Only" = model_rstanarm_1,
+    "With Dividends" = model_rstanarm_2
   ),
   fmt = 2
 )
 ```
 
 
-
-```{r}
-#| include: false
-#| eval: true
-#| warning: false
-model_rstanarm_1 <-
-  stan_glm(
-    formula = Price ~ EPS,
-    data = analysis_data,
-    family = gaussian(),
-    prior = normal(location = 0, scale = 2.5),
-    prior_intercept = normal(location = 0, scale = 2.5),
-    prior_aux = exponential(rate = 1),
-    seed = 345
-  )
-
-saveRDS(
-  model_rstanarm_1,
-  file = "model_rstanarm_1.rds"
-)
-```
-
-
-
-```{r}
-#| include: false
-#| eval: true
-#| warning: false
-model_rstanarm_2 <-
-  stan_glm(
-    formula = Price ~ EPS + Net_Income,
-    data = analysis_data,
-    family = gaussian(),
-    prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
-    prior_intercept = normal(0, 2.5, autoscale = TRUE),
-    prior_aux = exponential(rate = 1, autoscale = TRUE),
-    seed = 1234
-  )
-
-saveRDS(
-  model_rstanarm_2,
-  file = "model_rstanarm_2.rds"
-)
-```
 
 
 
@@ -452,10 +355,8 @@ Weaknesses and next steps should also be included.
 
 # Appendix {-}
 
-
-# Additional data details
-
 # Model details {#sec-model-details}
+
 
 ## Posterior predictive check
 
@@ -463,10 +364,11 @@ In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. 
 
 In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
 
+
+
 ```{r}
 #| include: false
 #| eval: true
-#| warning: false
 
 model_rstanarm_1 <-
   readRDS(file = "model_rstanarm.rds")
@@ -474,23 +376,7 @@ prior_summary(model_rstanarm_1)
 ```
 
 ```{r}
-#| echo: false
-#| eval: true
-#| label: tbl-poop
-#| tbl-cap: "priors"
-#| warning: false
-
-modelsummary(
-  list(
-    "Non-scaled priors" = model_rstanarm_1,
-    "Auto-scaling priors" = model_rstanarm_2
-  ),
-  fmt = 2
-)
-```
-
-```{r}
-#| include: true
+#| include: false
 #| eval: true
 
 prior_summary(model_rstanarm_2)
@@ -520,22 +406,21 @@ posterior_vs_prior(model_rstanarm_2) +
 
 ## Diagnostics
 
-@fig-stanareyouokay-1 is a trace plot. It shows... This suggests...
+@fig-fig-trace-1 is a trace plot 
 
-@fig-stanareyouokay-2 is a Rhat plot. It shows... This suggests...
+@fig-fig-trace-2 is a Rhat plot. It shows... This suggests...
 
-
-```
 
 ```{r}
 #| echo: false
 #| eval: true
 #| message: false
 #| warning: false
-#| label: fig-stanareyouokay
+#| label: fig-trace
 #| fig-cap: "Checking the convergence of the MCMC algorithm"
 #| fig-subcap: ["Trace plot", "Rhat plot"]
 #| layout-ncol: 2
+
 plot(model_rstanarm_2, "trace")
 
 plot(model_rstanarm_2, "rhat")
