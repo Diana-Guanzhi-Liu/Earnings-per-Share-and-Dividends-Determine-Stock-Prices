@@ -251,7 +251,7 @@ base_eps_plot +
   )
 ```
 
-In model 1, only the relationship between the dependent variable price and predictor variable EPS is analyzed. In the first column of @tbl-modelresults, we have a intercept of -124.69 with standard deviation of 7.1 and coefficient of 21.79 with S.D. 1.1. The coefficient term $\beta_1$ which shows the increase in price for every dollar increase in EPS can be observed from @fig-bestfit as the dashed line with standard error as the shaded area around the dashed line. Positive slope and coefficient show a positive relationship between EPS and stock price.
+In model 1, only the relationship between the dependent variable price and predictor variable EPS is analyzed. In the first column of @tbl-modelresults, we have a intercept of -124.69 and coefficient of 21.79 with S.D. 1.1. The coefficient term $\beta_1$ which shows the increase in price for every dollar increase in EPS can be observed from @fig-bestfit as the dashed line with standard error as the shaded area around the dashed line. Positive slope and coefficient show a positive relationship between EPS and stock price. While most observations follow the linear relationship, there is a large cluster around 0.
 
 ```{r}
 #| echo: false
@@ -302,9 +302,9 @@ base +
   labs(color = "Paid Dividends")
 ```
 
-In model 2, we introduce dividends as an additional predictor variable. Stocks that paid dividends have median price around 100, significantly lower than stocks that paid no dividends with median price around 175 (@fig-boxplot), demonstrating a negative relationship between paying dividends and stock price. The second column of @tbl-modelresults shows that the new intercept is 172.05 USD, and that the coefficient of paying dividends $\beta_2$ is -177.85. EPS of companies that paid dividends has intercept of 172.05 and coefficient of 25.59 (@tbl-modelresults). The new standard deviation for EPS is 1.0 and 21.6 for dividends. 
+In model 2, we introduce dividends as an additional predictor variable. Stocks that paid dividends have median price around 100, significantly lower than stocks that paid no dividends with median price around 175 (@fig-boxplot). The second column of @tbl-modelresults shows that the new intercept is 172.05 USD, and that the coefficient of paying dividends $\beta_2$ is -177.85. EPS of companies that paid dividends has intercept of 172.05 and coefficient of 25.59 (@tbl-modelresults). The new standard deviation for EPS is 1.0 and 21.6 for dividends. 
 
-The effects on price from EPS and dividends can be further observed in @fig-model-2 where the observations and line of best fit are colored blue to indicate that dividends were paid and red if not. EPS without dividends (red line) has very similar slope and coefficient as @fig-bestfit, and EPS with dividends (blue line) is below it and significantly shorter.
+The effects on price from EPS and dividends can be further observed in @fig-model-2 where the observations and line of best fit are colored blue to indicate that dividends were paid and red if not. EPS without dividends (red line) has very similar slope and coefficient as @fig-bestfit, and EPS with dividends (blue line) is below.
 
 
 ```{r}
@@ -323,27 +323,20 @@ modelsummary(
 )
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
 # Discussion
+## Companies with Higher Earnings per Share are More Attractive to Investors
+From model 1, we obtain a coefficient of 21.79 and standard deviation of 1.1 for EPS, indicating that for every additional dollar increase in EPS, stock price increases by 21.79 USD with average deviation of 1.1 (@tbl-modelresults). This confirms that there is a positive linear relationship between EPS and stock price. When a company is profitable relative to the amount of shares they have, each shareholder is entitle to a larger portion of their profit, making the company a more attractive investment than competitors that have lower EPS. This demand for shares of the company then drives up stock prices. Alternatively, a lower EPS indicating lower profitability or losses can cause existing shareholders to sell their shares, creating downward pressure on price.
 
-## First discussion point {#sec-first-point}
+This conclusion has several implications for investors and management of companies alike. For investors, it may be useful to use the causal relationship between EPS and stock price to predict future stock prices. An investor can use available net income information and number of shares from any company to calculate EPS before the information is released to the public. If the estimated EPS is high, the investor can buy up shares at a lower price before the increase in demand and sell those shares once demand increases to make a profit.
 
-If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this. 
+Managers of a company who have an incentive for their company to be profitable in the long term would want their share prices to exhibit stable growth over time instead of the short term fluctuations caused by changing demand. If managers anticipates that one year's EPS will be low, the company can use excess income to buy up shares once the price decreases. This alleviates some of the downward pressure on price and creates more stability. The company can then either hold onto the purchased share until a subsequent year when the price rebounds to sell them, or eliminate those shares from the market. Fewer shares means that the denominator of the EPS equation is smaller, causing subsequent EPS to be higher in the future.
 
-## Second discussion point
+## Paying Dividends Causes a Decrease in Stock Price
+From @fig-boxplot there is a negative relationship between paying dividends and stock price. When a company chooses to pay dividends, on average their stock price is expected to decrease by about 177.85 USD with standard deviation of 21.6 USD (@tbl-modelresults). This is consistent with contemporary literature on dividend policy which suggests that paying dividends causes the stock price to drop by the amount of the dividend per share plus the opportunity cost of lost potential profits the dividend could have been used to generate (@CiteNarinderp). Dividends paid out represents value that is extracted from the company and not used to invest into profitable projects. All things equal, this indicates that the company is expected to grow less than competitors who did not pay dividends and reinvested, making the stock less attractive to potential investors who care about growth.
 
-## Third discussion point
+Managers are faced with the decision of what to do with extra profit. If paid out in dividends, the stock price will fall but existing shareholders, especially large ones with 10% or more equity in the company, would want the dividend income as compensation for their investment. At the same time, paying out dividends makes the stock less attractive to future investors. By knowing the coefficient of paying dividends, managers are better able to balance these competing priorities.
+
+EPS coefficient of companies that paid dividends is 25.59 and new standard deviation for EPS is 1.0 (@tbl-modelresults). This is larger than that of model 1 where dividends were not considered. This means that the amount price is expected to increase per dollar EPS increases is larger.   
 
 ## Weaknesses and next steps
 
@@ -353,19 +346,11 @@ Weaknesses and next steps should also be included.
 
 \appendix
 
-# Appendix {-}
+# Appendix
 
 # Model details {#sec-model-details}
 
-
 ## Posterior predictive check
-
-In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
-
-In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
-
-
-
 ```{r}
 #| include: false
 #| eval: true
@@ -389,7 +374,7 @@ prior_summary(model_rstanarm_2)
 #| warning: false
 #| label: fig-ppcheckandposteriorvsprior
 #| layout-ncol: 2
-#| fig-cap: "Examining how the model fits, and is affected by, the data"
+#| fig-cap: "Examining how model 2 fits the data, and how it is affected by the data"
 #| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
 
 pp_check(model_rstanarm_2) +
@@ -402,21 +387,34 @@ posterior_vs_prior(model_rstanarm_2) +
   theme(legend.position = "bottom") +
   coord_flip()
 ```
+@fig-ppcheckandposteriorvsprior-1 compares actual dependent variable outcomes with distributions from the posterior simulation. We can see that the general shape and distribution are similar but actual data is far more concentrated than the simulations.
 
+@fig-ppcheckandposteriorvsprior-2 compares priors with posteriors to see how much the estimates change once data are taken into account. Our priors and posteriors are quite similar
+
+## Credible Intervals
+```{r}
+#| eval: true
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-credible-intervals
+#| fig-cap: "95% credibility intervals of model 2 variable coefficients"
+
+plot(
+  model_rstanarm_2,
+  "areas"
+)
+```
+
+@fig-credible-intervals shows the distributions of the 95% credibility intervals of coefficients of the predictor variables of model 2. The Bayesian estimation provides distributions of each coefficient. The actual value has a 95% probability of being within the interval with the distribution showing the likelihood within the interval. Ones that have a wider credibility interval are more spread out like dividends and intercept means that the true coefficient is within a larger range.
 
 ## Diagnostics
-
-@fig-fig-trace-1 is a trace plot 
-
-@fig-fig-trace-2 is a Rhat plot. It shows... This suggests...
-
-
 ```{r}
 #| echo: false
 #| eval: true
 #| message: false
 #| warning: false
-#| label: fig-trace
+#| label: fig-trace-rhat
 #| fig-cap: "Checking the convergence of the MCMC algorithm"
 #| fig-subcap: ["Trace plot", "Rhat plot"]
 #| layout-ncol: 2
@@ -425,10 +423,7 @@ plot(model_rstanarm_2, "trace")
 
 plot(model_rstanarm_2, "rhat")
 ```
+Markov chain Monte Carlo (MCMC) to was used in the model to obtain samples from the posterior distributions of interest. @fig-trace-rhat-1 shows bouncing horizontal lines with overlap, and @fig-trace-rhat-2 shows R-hat close to one. Both indicate that there are no issues with the algorithm.
 
 \newpage
-
-
 # References
-
-
