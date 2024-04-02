@@ -1,5 +1,5 @@
 ---
-title: "My title"
+title: "Relationship Between Stock Prices and Common Financial Metrics"
 subtitle: "Analysis of the Relationship Between Stock Price and EPS & Dividends of the Largest 50 North American Companies over 10 Years"
 author: Diana Liu
 thanks: "Code and data are available at: LINK."
@@ -41,7 +41,7 @@ The remainder of this paper is structured as follows. @sec-data....
 # Data
 Public companies whose stock are traded on exchanges, must disclose certain financial metrics in their quarterly and yearly financial statements. Investors then use these metrics to help inform their decision when selecting companies to invest in. Some of the most important metrics investors look at are Earnings Per Share, Net Income, and Dividends [@CiteShakespeare]. Investments take the form of buying shares or stocks which allows the investor to own a fraction of the company.
 
-The data used for analysis is obtained through Walton Research Data Services (WRDS) by the University of Pennsylvania. WRDS provides access to Compustat, a database of financial, statistical, and market information on global companies since 1962. Our data comes from Compustat's North America Fundamentals Annual database, which contains both financial data from all public North American companies, collected by Compustat from each company's annual financial statements or from stock exchanges (@fig-Analysis-Data-Sample). From this data set, we extract the price, EPS, net income, dividends, TIC, and Year of the top 50 largest companies by market capitalization, a measure of the size of the company in terms of total value, for the past 10 years. This Data is cleaned and analysed in @CiteR with assistance from @CiteTidy, @CiteArrow, @CiteModelsummary, @CiteBayesplot, @CiteBroom, @CiteGridextra, @CiteRstanarm, @CiteKnitr
+The data used for analysis is obtained through Walton Research Data Services (WRDS) by the University of Pennsylvania. WRDS provides access to Compustat, a database of financial, statistical, and market information on global companies since 1962. Our data comes from Compustat's North America Fundamentals Annual database, which contains both financial data from all public North American companies, collected by Compustat from each company's annual financial statements or from stock exchanges (@fig-Analysis-Data-Sample). From this data set, we extract the price, EPS, net income, dividends, TIC, and Year of the top 50 largest companies by market capitalization, a measure of the size of the company in terms of total value, for the past 10 years (2013-2023). This Data is cleaned and analysed in @CiteR with assistance from @CiteTidy, @CiteArrow, @CiteModelsummary, @CiteBayesplot, @CiteBroom, @CiteGridextra, @CiteRstanarm, @CiteKnitr
 
 Similar data sets exist, but WRDS was selected because it hosts the most robust collection in terms of variables and its infrastructure allows users to easily query specific items.
 
@@ -180,20 +180,16 @@ We expect the effects of EPS and dividends to interact with each other, creating
 #| include: false
 #| eval: true
 #| warning: false
-model_rstanarm_1 <-
-  stan_glm(
-    formula = Price ~ EPS,
-    data = analysis_data,
-    family = gaussian(),
-    prior = normal(location = 0, scale = 2.5),
-    prior_intercept = normal(location = 0, scale = 2.5),
-    prior_aux = exponential(rate = 1),
-    seed = 12345
+
+model_1 <-
+  lm(
+    Price ~ EPS,
+    data = analysis_data
   )
 
 saveRDS(
-  model_rstanarm_1,
-  file = "model_rstanarm_1.rds"
+  model_1,
+  file = "model_1.rds"
 )
 ```
 
@@ -222,7 +218,7 @@ saveRDS(
 #| include: false
 #| eval: true
 
-summary(model_rstanarm_1) 
+summary(model_1) 
 summary(model_rstanarm_2)
 ```
 
@@ -251,7 +247,7 @@ base_eps_plot +
   )
 ```
 
-In model 1, only the relationship between the dependent variable price and predictor variable EPS is analyzed. In the first column of @tbl-modelresults, we have a intercept of -124.69 and coefficient of 21.79 with S.D. 1.1. The coefficient term $\beta_1$ which shows the increase in price for every dollar increase in EPS can be observed from @fig-bestfit as the dashed line with standard error as the shaded area around the dashed line. Positive slope and coefficient show a positive relationship between EPS and stock price. While most observations follow the linear relationship, there is a large cluster around 0.
+In model 1, only the relationship between the dependent variable price and predictor variable EPS is analyzed. In the first column of @tbl-modelresults, we have a intercept of 27.25 and coefficient of 26.59 with S.D. 1.05. The coefficient term $\beta_1$ which shows the increase in price for every dollar increase in EPS can be observed from @fig-bestfit as the dashed line with standard error as the shaded area around the dashed line. Positive slope and coefficient show a positive relationship between EPS and stock price. While most observations follow the linear relationship, there is a large cluster around 0.
 
 ```{r}
 #| echo: false
@@ -316,7 +312,7 @@ The effects on price from EPS and dividends can be further observed in @fig-mode
 
 modelsummary(
   list(
-    "EPS Only" = model_rstanarm_1,
+    "EPS Only" = model_1,
     "With Dividends" = model_rstanarm_2
   ),
   fmt = 2
@@ -334,13 +330,16 @@ Managers of a company who have an incentive for their company to be profitable i
 ## Paying Dividends Causes a Decrease in Stock Price
 From @fig-boxplot there is a negative relationship between paying dividends and stock price. When a company chooses to pay dividends, on average their stock price is expected to decrease by about 177.85 USD with standard deviation of 21.6 USD (@tbl-modelresults). This is consistent with contemporary literature on dividend policy which suggests that paying dividends causes the stock price to drop by the amount of the dividend per share plus the opportunity cost of lost potential profits the dividend could have been used to generate (@CiteNarinderp). Dividends paid out represents value that is extracted from the company and not used to invest into profitable projects. All things equal, this indicates that the company is expected to grow less than competitors who did not pay dividends and reinvested, making the stock less attractive to potential investors who care about growth.
 
-Managers are faced with the decision of what to do with extra profit. If paid out in dividends, the stock price will fall but existing shareholders, especially large ones with 10% or more equity in the company, would want the dividend income as compensation for their investment. At the same time, paying out dividends makes the stock less attractive to future investors. By knowing the coefficient of paying dividends, managers are better able to balance these competing priorities.
+EPS coefficient of companies that paid dividends is 25.59 and new standard deviation for EPS is 1.0 (@tbl-modelresults). This is smaller than that of model one where dividends were not considered. This means that the amount price is expected to increase per dollar EPS increases is larger, likely due to the fact that if a firm is profitable enough to pay dividends, it should also have high EPS.
 
-EPS coefficient of companies that paid dividends is 25.59 and new standard deviation for EPS is 1.0 (@tbl-modelresults). This is larger than that of model 1 where dividends were not considered. This means that the amount price is expected to increase per dollar EPS increases is larger.   
+Managers are faced with the decision of what to do with extra profit. If paid out in dividends, the stock price will fall but existing shareholders, especially large ones with 10% or more equity in the company, would want the dividend income as compensation for their investment. At the same time, paying out dividends makes the stock less attractive to future investors. By knowing the coefficient of paying dividends and coefficient of EPS increases, managers are better able to balance these competing priorities and make better decisions in regards to long-term profitability and growth of their firms.
 
 ## Weaknesses and next steps
+A weakness in our model is the distribution of the data where they are clustered around zero, this may indicate that a linear model is not appropriate for our observations and the conclusions between EPS, dividends and price cannot be drawn. While the residuals follow normal distribution, they are clustered together instead of randomly spaced apart, indicating that they contain some additional structure that was not captured by our analysis (@fig-residuals). The posterior prediction check also supports this as the actual data is far larger kurtosis than what the model predicted, meaning that the predictive power of the model is low (@fig-ppcheckandposteriorvsprior-1). The credibility intervals for the coefficient of paying dividends is also quite large, with probability normally distributed between about -275 and -125 USD, suggesting a relatively high level of uncertainty (@fig-credible-intervals). Practically, the model worked as intended with no signs of problems from the trace plot or r-hat values (@fig-trace-rhat). Further work is needed to confirm the positive linear relationship between stock price and EPS.
 
-Weaknesses and next steps should also be included.
+The conclusions drawn from our analysis only applies to our data set of large, North American companies from 2013-2023. More analysis with diverse data sets in terms of need to be done to determine if the same conclusions are applicable to companies of different sizes or different geographic locations. The data is also historic, meaning that the relationships described may not occur in the future. Training the model to have predictive power may provide additional useful information.
+
+Lastly, while financial metrics are important to management and investor decision making, there are many quantitative factors like the strategic direction of a firm and its competitive advantage within the industry should also be considered. Future analysis should aim to quantify these categorical factors and determine their relationship with stock price as well as how they interact with financial metrics.
 
 \newpage
 
@@ -350,16 +349,6 @@ Weaknesses and next steps should also be included.
 
 # Model details {#sec-model-details}
 
-## Posterior predictive check
-```{r}
-#| include: false
-#| eval: true
-
-model_rstanarm_1 <-
-  readRDS(file = "model_rstanarm.rds")
-prior_summary(model_rstanarm_1)
-```
-
 ```{r}
 #| include: false
 #| eval: true
@@ -367,6 +356,49 @@ prior_summary(model_rstanarm_1)
 prior_summary(model_rstanarm_2)
 ```
 
+## Residuals
+```{r}
+#| eval: true
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-residuals
+#| layout-ncol: 2
+#| layout-nrow: 2
+#| fig-cap: "Examining how model 2 fits the data, and how it is affected by the data"
+#| fig-subcap: ["Distribution of residuals", " Residuals by EPS", "Residuals by Price", "Comparing the estimated price with the actual price"]
+
+analysis_data <-
+  augment(
+    model_1,
+    data = analysis_data
+  )
+
+ggplot(analysis_data, aes(x = .resid)) +
+  geom_histogram(binwidth = 1) +
+  theme_classic() +
+  labs(y = "Number of occurrences", x = "Residuals")
+
+ggplot(analysis_data, aes(x = EPS, y = .resid)) +
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dotted", color = "grey") +
+  theme_classic() +
+  labs(y = "Residuals", x = "EPS")
+
+ggplot(analysis_data, aes(x = Price, y = .resid)) +
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dotted", color = "grey") +
+  theme_classic() +
+  labs(y = "Residuals", x = "Stock Price")
+
+ggplot(analysis_data, aes(x = Price, y = .fitted)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
+  theme_classic() +
+  labs(y = "Estimated Stock Price", x = "Actual Stock Price")
+```
+
+## Posterior predictive check
 ```{r}
 #| eval: true
 #| echo: false
@@ -387,9 +419,9 @@ posterior_vs_prior(model_rstanarm_2) +
   theme(legend.position = "bottom") +
   coord_flip()
 ```
-@fig-ppcheckandposteriorvsprior-1 compares actual dependent variable outcomes with distributions from the posterior simulation. We can see that the general shape and distribution are similar but actual data is far more concentrated than the simulations.
+@fig-ppcheckandposteriorvsprior-1 compares actual dependent variable outcomes with distributions from the posterior simulation. We can see that the general shape and distribution are similar but actual data has far higher kurtosis than the simulations.
 
-@fig-ppcheckandposteriorvsprior-2 compares priors with posteriors to see how much the estimates change once data are taken into account. Our priors and posteriors are quite similar
+@fig-ppcheckandposteriorvsprior-2 compares priors with posteriors to see how much the estimates change once data are taken into account. Our priors and posteriors are quite similar, 
 
 ## Credible Intervals
 ```{r}
@@ -423,7 +455,7 @@ plot(model_rstanarm_2, "trace")
 
 plot(model_rstanarm_2, "rhat")
 ```
-Markov chain Monte Carlo (MCMC) to was used in the model to obtain samples from the posterior distributions of interest. @fig-trace-rhat-1 shows bouncing horizontal lines with overlap, and @fig-trace-rhat-2 shows R-hat close to one. Both indicate that there are no issues with the algorithm.
+Markov chain Monte Carlo (MCMC) to was used in the model to obtain samples from the posterior distributions of interest. @fig-trace-rhat-1 shows bouncing horizontal lines with overlap, and @fig-trace-rhat-2 shows R-hat close to one. Both indicate that there are no issues with the algorithm. 
 
 \newpage
 # References
