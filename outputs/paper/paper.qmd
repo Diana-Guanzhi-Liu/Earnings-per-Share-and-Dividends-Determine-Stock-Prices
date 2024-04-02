@@ -2,7 +2,7 @@
 title: "Relationship Between Stock Prices and Common Financial Metrics"
 subtitle: "Analysis of the Relationship Between Stock Price and EPS & Dividends of the Largest 50 North American Companies over 10 Years"
 author: Diana Liu
-thanks: "Code and data are available at: LINK."
+thanks: "Code and data are available at: https://github.com/Diana-Guanzhi-Liu/Relationship-Between-Stock-Prices-and-Common-Financial-Metrics"
 date: today
 date-format: long
 abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
@@ -185,7 +185,7 @@ model_1 <-
 
 saveRDS(
   model_1,
-  file = "model_1.rds"
+  file = "~/Stock-Prices/outputs/models/model_1.rds"
 )
 ```
 
@@ -206,7 +206,7 @@ model_rstanarm_2 <-
 
 saveRDS(
   model_rstanarm_2,
-  file = "model_rstanarm_2.rds"
+  file = "~/Stock-Prices/outputs/models/model_rstanarm_2.rds"
 )
 ```
 
