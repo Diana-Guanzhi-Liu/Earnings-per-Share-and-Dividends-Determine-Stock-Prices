@@ -24,20 +24,16 @@ library(broom)
 library(gridExtra)
 library(rstanarm)
 library(knitr)
-#
-library(gt)
 library(grDevices)
+library(gt)
 ```
 
-
 # Introduction
-
-
 
 # Data
 Public companies whose stock are traded on exchanges, must disclose certain financial metrics in their quarterly and yearly financial statements. Investors then use these metrics to help inform their decision when selecting companies to invest in. Some of the most important metrics investors look at are Earnings Per Share, Net Income, and Dividends [@CiteShakespeare]. Investments take the form of buying shares or stocks which allows the investor to own a fraction of the company.
 
-The data used for analysis is obtained through Walton Research Data Services (WRDS) by the University of Pennsylvania. WRDS provides access to Compustat, a database of financial, statistical, and market information on global companies since 1962. Our data comes from Compustat's North America Fundamentals Annual database, which contains both financial data from all public North American companies, collected by Compustat from each company's annual financial statements or from stock exchanges (@fig-Analysis-Data-Sample). From this data set, we extract the price, EPS, net income, dividends, TIC, and Year of the top 50 largest companies by market capitalization, a measure of the size of the company in terms of total value, for the past 10 years (2013-2023). This Data is cleaned and analysed in @CiteR with assistance from @CiteTidy, @CiteArrow, @CiteModelsummary, @CiteBayesplot, @CiteBroom, @CiteGridextra, @CiteRstanarm, @CiteKnitr
+The data used for analysis is obtained through Walton Research Data Services (WRDS) by the University of Pennsylvania. WRDS provides access to Compustat, a database of financial, statistical, and market information on global companies since 1962. Our data comes from Compustat's North America Fundamentals Annual database, which contains both financial data from all public North American companies, collected by Compustat from each company's annual financial statements or from stock exchanges (@fig-Analysis-Data-Sample). From this data set, we extract the price, EPS, net income, dividends, TIC, and Year of the top 50 largest companies by market capitalization, a measure of the size of the company in terms of total value, for the past 10 years (2013-2023). This Data is cleaned and analysed in @CiteR with assistance from @CiteTidy, @CiteArrow, @CiteModelsummary, @CiteBayesplot, @CiteBroom, @CiteGridextra, @CiteRstanarm, @CiteKnitr, @Citegt, and @CitegrDevices.
 
 Similar data sets exist, but WRDS was selected because it hosts the most robust collection in terms of variables and its infrastructure allows users to easily query specific items.
 
