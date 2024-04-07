@@ -236,10 +236,12 @@ base_eps_plot +
     color = "black",
     linetype = "dashed",
     formula = "y ~ x"
-  )
+  ) +
+  xlim(-5, 30) +
+  ylim(0, 2000)
 ```
 
-In model 1, only the relationship between the dependent variable price and predictor variable EPS is analyzed. In the first column of @tbl-modelresults, we have a intercept of 27.25 and coefficient of 26.59 with S.D. 1.05. The coefficient term $\beta_1$ which shows the increase in price for every dollar increase in EPS can be observed from @fig-bestfit as the dashed line with standard error as the shaded area around the dashed line. Positive slope and coefficient show a positive relationship between EPS and stock price. While most observations follow the linear relationship, there is a large cluster around 0.
+In model 1, only the relationship between the dependent variable price and predictor variable EPS is analyzed. In the first column of @tbl-modelresults, we have a intercept of 27.25 and with standard error 11.47. The coefficient term $\beta_1$ is 26.59 with standard error 1.05 which shows the increase in price for every dollar increase in EPS that can also be observed from @fig-bestfit as the dashed line with standard error as the shaded area around the dashed line. Positive slope and coefficient show a positive relationship between EPS and stock price. While most observations follow the linear relationship, there is some clustering between 0 to 10.
 
 ```{r}
 #| echo: false
@@ -265,7 +267,7 @@ dividends_plot
 #| echo: false
 #| eval: true
 #| label: fig-model-2
-#| fig-cap: "Linear regression "
+#| fig-cap: "Relationship between EPS, dividends, and stock price."
 #| warning: false
 
 base <-
@@ -287,12 +289,14 @@ base +
     linetype = "dashed",
     formula = "y ~ x"
   ) +
-  labs(color = "Paid Dividends")
+  labs(color = "Paid Dividends") +
+  xlim(-5, 30) +
+  ylim(0, 2000)
 ```
 
-In model 2, we introduce dividends as an additional predictor variable. Stocks that paid dividends have median price around 100, significantly lower than stocks that paid no dividends with median price around 175 (@fig-boxplot). The second column of @tbl-modelresults shows that the new intercept is 172.05 USD, and that the coefficient of paying dividends $\beta_2$ is -177.85. EPS of companies that paid dividends has intercept of 172.05 and coefficient of 25.59 (@tbl-modelresults). The new standard deviation for EPS is 1.0 and 21.6 for dividends. 
+In model 2, we introduce dividends as an additional predictor variable. Paying dividends has a negative relationship with price as show in @fig-boxplot where stocks that paid dividends have median price around 100, significantly lower than stocks that paid no dividends with median price around 175. Stocks that did not pay dividends also have a significantly larger interquartile range for price of around 250 USD than stocks that did of 100. 
 
-The effects on price from EPS and dividends can be further observed in @fig-model-2 where the observations and line of best fit are colored blue to indicate that dividends were paid and red if not. EPS without dividends (red line) has very similar slope and coefficient as @fig-bestfit, and EPS with dividends (blue line) is below.
+The second column of @tbl-modelresults shows that the new intercept is 172.05 USD, and that the coefficient of paying dividends $\beta_2$ is -177.85. With the addition of the dividends variable, EPS of companies that paid dividends has changed to a coefficient of 25.59 (@tbl-modelresults). The effects on price from EPS and dividends can be further observed in @fig-model-2 where the observations and line of best fit are colored blue to indicate that dividends were paid and red if not. EPS without dividends (red line) has very similar slope and coefficient as @fig-bestfit. EPS with dividends (blue line) has a less steep slope and is located below the EPS without dividends.
 
 
 ```{r}
@@ -310,19 +314,20 @@ modelsummary(
   fmt = 2
 )
 ```
+$R^2$ and adjusted $R^2$ are terms that explains how well the model is able to explain data, with $R^2$ for single variable models and the more conservative adjusted $R^2$ for multiple variables. Model 1 has a $R^2$ of 0.57, meaning that 57% of the variability observed in stock price is explained by EPS in the regression model. Model 2 can explain 59% of stock price with EPS and dividends. Both indicate that the model can explain stock price reasonably well, but there is around 40% of variability is attributed to other causes.
 
 # Discussion
 ## Companies with Higher Earnings per Share are More Attractive to Investors
-From model 1, we obtain a coefficient of 21.79 and standard deviation of 1.1 for EPS, indicating that for every additional dollar increase in EPS, stock price increases by 21.79 USD with average deviation of 1.1 (@tbl-modelresults). This confirms that there is a positive linear relationship between EPS and stock price. When a company is profitable relative to the amount of shares they have, each shareholder is entitle to a larger portion of their profit, making the company a more attractive investment than competitors that have lower EPS. This demand for shares of the company then drives up stock prices. Alternatively, a lower EPS indicating lower profitability or losses can cause existing shareholders to sell their shares, creating downward pressure on price.
+From model 1, we obtain a coefficient of 26.59 and standard error of 1.05 for EPS, indicating that for every additional dollar increase in EPS, stock price increases by 26.599 USD (@tbl-modelresults). The standard error term means that on average the relationship between EPS and stock price differs from the actual relationship by 1.05 USD. The standard error is relatively small, just over a dollar, so model 1 is reasonably accurate. This confirms that there is a positive linear relationship between EPS and stock price. When a company is profitable relative to the amount of shares they have, each shareholder is entitle to a larger portion of their profit, making the company a more attractive investment than competitors that have lower EPS. This demand for shares of the company then drives up stock prices. Alternatively, a lower EPS indicating lower profitability or losses can cause existing shareholders to sell their shares, creating downward pressure on price.
 
 This conclusion has several implications for investors and management of companies alike. For investors, it may be useful to use the causal relationship between EPS and stock price to predict future stock prices. An investor can use available net income information and number of shares from any company to calculate EPS before the information is released to the public. If the estimated EPS is high, the investor can buy up shares at a lower price before the increase in demand and sell those shares once demand increases to make a profit.
 
 Managers of a company who have an incentive for their company to be profitable in the long term would want their share prices to exhibit stable growth over time instead of the short term fluctuations caused by changing demand. If managers anticipates that one year's EPS will be low, the company can use excess income to buy up shares once the price decreases. This alleviates some of the downward pressure on price and creates more stability. The company can then either hold onto the purchased share until a subsequent year when the price rebounds to sell them, or eliminate those shares from the market. Fewer shares means that the denominator of the EPS equation is smaller, causing subsequent EPS to be higher in the future.
 
-## Paying Dividends Causes a Decrease in Stock Price
-From @fig-boxplot there is a negative relationship between paying dividends and stock price. When a company chooses to pay dividends, on average their stock price is expected to decrease by about 177.85 USD with standard deviation of 21.6 USD (@tbl-modelresults). This is consistent with contemporary literature on dividend policy which suggests that paying dividends causes the stock price to drop by the amount of the dividend per share plus the opportunity cost of lost potential profits the dividend could have been used to generate (@CiteNarinderp). Dividends paid out represents value that is extracted from the company and not used to invest into profitable projects. All things equal, this indicates that the company is expected to grow less than competitors who did not pay dividends and reinvested, making the stock less attractive to potential investors who care about growth.
+## Paying Dividends Causes Stock Prices to Fall
+From @fig-boxplot there is a negative relationship between paying dividends and stock price. When a company chooses to pay dividends, on average their stock price is expected to decrease by about 177.85 USD (@tbl-modelresults). This is consistent with contemporary literature on dividend policy which suggests that paying dividends causes the stock price to drop by the amount of the dividend per share plus the opportunity cost of lost potential profits the dividend could have been used to generate (@CiteNarinderp). Dividends paid out represents value that is extracted from the company and not used to invest into profitable projects. All things equal, this indicates that the company is expected to grow less than competitors who did not pay dividends and reinvested, making the stock less attractive to potential investors who care about growth.
 
-EPS coefficient of companies that paid dividends is 25.59 and new standard deviation for EPS is 1.0 (@tbl-modelresults). This is smaller than that of model one where dividends were not considered. This means that the amount price is expected to increase per dollar EPS increases is larger, likely due to the fact that if a firm is profitable enough to pay dividends, it should also have high EPS.
+EPS coefficient of companies that paid dividends is 25.59 which is one dollar less than that of model one where dividends were not considered (@tbl-modelresults). This means that the amount price is expected to increase per dollar EPS increases is smaller, likely due to  !! why lol?<<<
 
 Managers are faced with the decision of what to do with extra profit. If paid out in dividends, the stock price will fall but existing shareholders, especially large ones with 10% or more equity in the company, would want the dividend income as compensation for their investment. At the same time, paying out dividends makes the stock less attractive to future investors. By knowing the coefficient of paying dividends and coefficient of EPS increases, managers are better able to balance these competing priorities and make better decisions in regards to long-term profitability and growth of their firms.
 
@@ -357,7 +362,7 @@ prior_summary(model_rstanarm_2)
 #| label: fig-residuals
 #| layout-ncol: 2
 #| layout-nrow: 2
-#| fig-cap: "Examining how model 2 fits the data, and how it is affected by the data"
+#| fig-cap: "Residuals of model 1, simple linear regression"
 #| fig-subcap: ["Distribution of residuals", " Residuals by EPS", "Residuals by Price", "Comparing the estimated price with the actual price"]
 
 analysis_data <-
@@ -375,20 +380,27 @@ ggplot(analysis_data, aes(x = EPS, y = .resid)) +
   geom_point() +
   geom_hline(yintercept = 0, linetype = "dotted", color = "grey") +
   theme_classic() +
-  labs(y = "Residuals", x = "EPS")
+  labs(y = "Residuals", x = "EPS") +
+  xlim(-5, 30) +
+  ylim(-500, 2000)
 
 ggplot(analysis_data, aes(x = Price, y = .resid)) +
   geom_point() +
   geom_hline(yintercept = 0, linetype = "dotted", color = "grey") +
   theme_classic() +
-  labs(y = "Residuals", x = "Stock Price")
+  labs(y = "Residuals", x = "Stock Price") +
+  xlim(0, 2000) +
+  ylim(-500, 2000)
 
 ggplot(analysis_data, aes(x = Price, y = .fitted)) +
   geom_point() +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
   theme_classic() +
-  labs(y = "Estimated Stock Price", x = "Actual Stock Price")
+  labs(y = "Estimated Stock Price", x = "Actual Stock Price") +
+  xlim(0, 2000) +
+  ylim(-500, 2000)
 ```
+@fig-residuals-1 shows that residuals are normally distributed around zero which is a good sign that our model is able to capture the main patterns in stock price data with our predictor variables. This is supported by residuals scatter plot @fig-residuals-3 show that the residual values are randomly scattered around zero. However, in @fig-residuals-2, the residuals show a negative linear pattern which indicates that our linear model may not be appropriate for the data. Lastly, in @fig-residuals-4, the relationship between actual and estimated stock prices appears somewhat linear but with a large cluster around 0. A perfectly predictive model will have a linear slope of one, meaning that our model may lack predictive power.
 
 ## Posterior predictive check
 ```{r}
@@ -439,7 +451,7 @@ plot(
 #| message: false
 #| warning: false
 #| label: fig-trace-rhat
-#| fig-cap: "Checking the convergence of the MCMC algorithm"
+#| fig-cap: "Checking the convergence of the MCMC algorithm of model 2"
 #| fig-subcap: ["Trace plot", "Rhat plot"]
 #| layout-ncol: 2
 
