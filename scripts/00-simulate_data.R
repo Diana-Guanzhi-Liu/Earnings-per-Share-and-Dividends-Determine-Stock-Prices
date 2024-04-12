@@ -15,17 +15,15 @@ tic1 <- sample(letters, 100, TRUE)
 tic2 <- sample(letters, 100, TRUE)
 tic3 <- sample(letters, 100, TRUE)
 tic <- paste(tic1, tic2, tic3)
+dividend <- c("yes", "no")
 
 financial_data <-
   tibble(
     tic,
     net_income = round(abs(rnorm(100, mean = 10000, sd = 5000)), 2),
-    dividends = round(abs(rnorm(100, mean = 5, sd = 100)), 2),
+    dividends = sample(dividend, 100, replace = T, prob = c(0.5, 0.5)),
     eps = round(abs(rnorm(100, mean = 5, sd = 2)), 2),
     price = round(abs(rnorm(100, mean = 75, sd = 100)), 2)
   )
 
 financial_data
-
-
-
