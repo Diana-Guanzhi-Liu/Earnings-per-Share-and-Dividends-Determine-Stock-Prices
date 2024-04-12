@@ -5,7 +5,7 @@ author: Diana Liu
 thanks: "Code and data are available at: https://github.com/Diana-Guanzhi-Liu/Relationship-Between-Stock-Prices-and-Common-Financial-Metrics"
 date: today
 date-format: long
-abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
+abstract: "This study examines the relationship between Earnings per Share (EPS), dividends, and stock prices in publicly traded companies. Findings indicate a positive correlation between EPS and stock price, with each dollar increase in EPS associated with a $26.59 rise in stock price. Conversely, dividend payments are linked to a decrease in stock price, mitigating the impact of EPS on price. These insights enable investors to predict stock prices, informing their investment strategies, as well as guide managerial decisions balancing pleasing existing shareholders by paying dividends, ensuring long-term growth of the company, and keeping the stock attractive to new investors."
 format: pdf
 number-sections: true
 bibliography: references.bib
@@ -344,7 +344,7 @@ The conclusions drawn from our analysis only applies to our data set of large, N
 Lastly, while financial metrics are important to management and investor decision making, there are many qualitative factors that should also be considered like the strategic direction of a firm, the strength of its customer relations and workforce productivity, and its competitive advantage within the industry. The WRDS database we used did not have metrics to measure these variables in terms of numerical value, so ways to quantify these variables should be explored. Future analysis should aim to determine the relationship between these categorical variables with stock price as well as how they interact with other financial metrics like EPS and dividends.
 
 # Conclusion
-
+The analysis indicates a positive linear relationship between Earnings per Share (EPS) and stock price, suggesting that companies with higher EPS are more attractive to investors. This relationship allows investors to predict future stock prices based on EPS data before it's publicly released, providing opportunities for profit. However, paying dividends is associated with a decrease in stock price, likely due to the perceived decrease in growth potential when profits are distributed rather than reinvested. Managers facing the decision of dividend payout must balance the desires of existing shareholders for income against the potential negative impact on future investor attraction. The model's weaknesses, such as clustered data distribution and high uncertainty in dividend coefficient estimates, suggest the need for further analysis. Exploration of qualitative factors beyond financial metrics to better understand stock price dynamics can also be beneficial to investors and managers. Overall, while EPS remains a significant predictor of stock price, future studies should aim to incorporate a broader range of variables and data sets to enhance predictive accuracy and account for potential variations across industries and time periods.
 
 \newpage
 \appendix
