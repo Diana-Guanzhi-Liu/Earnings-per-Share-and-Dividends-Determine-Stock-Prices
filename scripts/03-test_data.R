@@ -13,7 +13,7 @@ library(tidyverse)
 #### Test data ####
 analysis_data <- read_parquet("outputs/data/analysis_data.parquet")
 
-# Tests if the ticker symbol is a character
+# 1. Tests if the ticker symbol is a character
 if (all(analysis_data$Tic |>
         unique() %>% class() == "character")) {
   "Pass: The cleaned Tic symbols are the correct class"
@@ -21,7 +21,7 @@ if (all(analysis_data$Tic |>
   "Fail: Not all of the Tic symbols have been cleaned completely"
 }
 
-# Tests if the ticker symbol has 6 or less characters
+# 2. Tests if the ticker symbol has 6 or less characters
 if (all(analysis_data$Tic |>
         nchar() <= 6)) {
   "Pass: The cleaned Tic symbols are the correct length"
@@ -29,7 +29,7 @@ if (all(analysis_data$Tic |>
   "Fail: Not all of the Tic symbols have been cleaned completely"
 }
 
-# Tests if the Year is positive
+# 3. Tests if the Year is positive
 if (all(analysis_data$Year |>
         min() > 0)) {
   "Pass: The cleaned Years are positive"
@@ -37,7 +37,7 @@ if (all(analysis_data$Year |>
   "Fail: Years have not been cleaned completely"
 }
 
-# Tests if the Year is greater than or equal to 2013
+# 4. Tests if the Year is greater than or equal to 2013
 if (all(analysis_data$Year |>
         min() >= 2013)) {
   "Pass: The cleaned Years are greater than or equal to 2013"
@@ -45,7 +45,7 @@ if (all(analysis_data$Year |>
   "Fail: Years have not been cleaned completely"
 }
 
-# Tests if the Year is less than or equal to 2023
+# 5. Tests if the Year is less than or equal to 2023
 if (all(analysis_data$Year |>
         max() <= 2023)) {
   "Pass: The cleaned Years are less than or equal to 2023"
@@ -53,7 +53,7 @@ if (all(analysis_data$Year |>
   "Fail: Years have not been cleaned completely"
 }
 
-# Tests if Dividends are numbers
+# 6. Tests if Dividends are numbers
 if (all(analysis_data$Dividends |>
         unique() %>% class() == "numeric")) {
   "Pass: The cleaned Dividends are the correct class"
@@ -61,7 +61,7 @@ if (all(analysis_data$Dividends |>
   "Fail: Not all of the Dividends have been cleaned completely"
 }
 
-# Tests if the Dividends are positive or zero
+# 7. Tests if the Dividends are positive or zero
 if (all(analysis_data$Dividends |>
         min() >= 0)) {
   "Pass: The cleaned Dividends are positive"
@@ -69,7 +69,7 @@ if (all(analysis_data$Dividends |>
   "Fail: Dividends have not been cleaned completely"
 }
 
-# Tests if Price are numbers
+# 8. Tests if Price are numbers
 if (all(analysis_data$Price |>
         unique() %>% class() == "numeric")) {
   "Pass: The cleaned Price are the correct class"
@@ -77,7 +77,7 @@ if (all(analysis_data$Price |>
   "Fail: Not all of the Price have been cleaned completely"
 }
 
-# Tests if Net Income are numbers
+# 9. Tests if Net Income are numbers
 if (all(analysis_data$Net_Income |>
         unique() %>% class() == "numeric")) {
   "Pass: The cleaned Net Income are the correct class"
@@ -85,7 +85,7 @@ if (all(analysis_data$Net_Income |>
   "Fail: Not all of the Net Income have been cleaned completely"
 }
 
-# Tests if EPS are numbers
+# 10. Tests if EPS are numbers
 if (all(analysis_data$EPS |>
         unique() %>% class() == "numeric")) {
   "Pass: The cleaned EPS are the correct class"

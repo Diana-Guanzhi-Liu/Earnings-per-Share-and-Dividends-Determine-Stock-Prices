@@ -1,37 +1,47 @@
 #### Preamble ####
-# Purpose: Models... [...UPDATE THIS...]
-# Author: Rohan Alexander [...UPDATE THIS...]
-# Date: 11 February 2023 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
-# License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
+# Purpose: Models stock price data with a linear model
+# Author: Diana Liu
+# Date: 11 April 12 2024
+# Contact: guanzhi.liu@mail.utoronto.ca
+# Pre-requisites: downloaded, cleaned, and tested data
 
 
 #### Workspace setup ####
 library(tidyverse)
 library(rstanarm)
+library(arrow)
 
 #### Read data ####
-analysis_data <- read_csv("outputs/data/analysis_data.csv")
+analysis_data <- read_parquet(here::here("outputs/data/analysis_data.parquet"))
 
 ### Model data ####
-first_model <-
+model_1 <-
+  lm(
+    Price ~ EPS,
+    data = analysis_data
+  )
+
+model_2 <-
   stan_glm(
-    formula = flying_time ~ length + width,
+    formula = Price ~ EPS + Paid_Dividend,
     data = analysis_data,
     family = gaussian(),
     prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
-    prior_intercept = normal(location = 0, scale = 2.5, autoscale = TRUE),
+    prior_intercept = normal(0, 2.5, autoscale = TRUE),
     prior_aux = exponential(rate = 1, autoscale = TRUE),
-    seed = 853
+    seed = 12345
   )
-
 
 #### Save model ####
 saveRDS(
-  first_model,
-  file = "outputs/models/first_model.rds"
+  model_1,
+  file = "~/Stock-Prices/outputs/models/model_1.rds"
 )
+
+saveRDS(
+  model_2,
+  file = "~/Stock-Prices/outputs/models/model_2.rds"
+)
+
 
 

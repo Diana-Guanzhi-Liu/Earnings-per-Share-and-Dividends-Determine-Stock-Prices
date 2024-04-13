@@ -1,8 +1,8 @@
 ---
-title: "Effect of Earnings and Dividends on Stock Prices"
+title: "What Determines Stock Prices?"
 subtitle: "Analysis of the Relationship Between Stock Price, Earnings Per Share, and Dividends of the Largest 50 North American Companies from 2013 to 2023"
 author: Diana Liu
-thanks: "Code and data are available at: https://github.com/Diana-Guanzhi-Liu/Effect-of-Earnings-and-Dividends-on-StockPrices"
+thanks: "Code and data are available at: https://github.com/Diana-Guanzhi-Liu/What-Determines-Stock-Prices-"
 date: today
 date-format: long
 abstract: "This study examines the relationship between Earnings per Share (EPS), dividends, and stock prices in publicly traded companies. Findings indicate a positive correlation between EPS and stock price, with each dollar increase in EPS associated with a $26.59 rise in stock price. Conversely, dividend payments are linked to a decrease in stock price, mitigating the impact of EPS on price. These insights enable investors to predict stock prices, informing their investment strategies, as well as guide managerial decisions balancing pleasing existing shareholders by paying dividends, ensuring long-term growth of the company, and keeping the stock attractive to new investors."
@@ -176,37 +176,8 @@ We expect the effects of EPS and dividends to interact with each other, creating
 #| eval: true
 #| warning: false
 
-model_1 <-
-  lm(
-    Price ~ EPS,
-    data = analysis_data
-  )
-
-saveRDS(
-  model_1,
-  file = "~/Stock-Prices/outputs/models/model_1.rds"
-)
-```
-
-```{r}
-#| include: false
-#| eval: true
-#| warning: false
-model_rstanarm_2 <-
-  stan_glm(
-    formula = Price ~ EPS + Paid_Dividend,
-    data = analysis_data,
-    family = gaussian(),
-    prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
-    prior_intercept = normal(0, 2.5, autoscale = TRUE),
-    prior_aux = exponential(rate = 1, autoscale = TRUE),
-    seed = 12345
-  )
-
-saveRDS(
-  model_rstanarm_2,
-  file = "~/Stock-Prices/outputs/models/model_rstanarm_2.rds"
-)
+model_1 <- readRDS("~/Stock-Prices/outputs/models/model_1.rds")
+model_2 <- readRDS("~/Stock-Prices/outputs/models/model_2.rds")
 ```
 
 ```{r}
@@ -214,7 +185,7 @@ saveRDS(
 #| eval: true
 
 summary(model_1) 
-summary(model_rstanarm_2)
+summary(model_2)
 ```
 
 ```{r}
@@ -312,7 +283,7 @@ The second column of @tbl-modelresults shows that the new intercept is 172.05 US
 modelsummary(
   list(
     "EPS Only" = model_1,
-    "With Dividends" = model_rstanarm_2
+    "With Dividends" = model_2
   ),
   fmt = 2
 )
@@ -355,7 +326,7 @@ The analysis indicates a positive linear relationship between Earnings per Share
 #| include: false
 #| eval: true
 
-prior_summary(model_rstanarm_2)
+prior_summary(model_2)
 ```
 
 ## Residuals
@@ -418,11 +389,11 @@ ggplot(analysis_data, aes(x = Price, y = .fitted)) +
 #| fig-cap: "Examining how model 2 fits the data, and how it is affected by the data"
 #| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
 
-pp_check(model_rstanarm_2) +
+pp_check(model_2) +
   theme_classic() +
   theme(legend.position = "bottom")
 
-posterior_vs_prior(model_rstanarm_2) +
+posterior_vs_prior(model_2) +
   theme_minimal() +
   scale_color_brewer(palette = "Set1") +
   theme(legend.position = "bottom") +
@@ -442,7 +413,7 @@ posterior_vs_prior(model_rstanarm_2) +
 #| fig-cap: "95% credibility intervals of model 2 variable coefficients"
 
 plot(
-  model_rstanarm_2,
+  model_2,
   "areas"
 )
 ```
@@ -460,9 +431,9 @@ plot(
 #| fig-subcap: ["Trace plot", "Rhat plot"]
 #| layout-ncol: 2
 
-plot(model_rstanarm_2, "trace")
+plot(model_2, "trace")
 
-plot(model_rstanarm_2, "rhat")
+plot(model_2, "rhat")
 ```
 Markov chain Monte Carlo (MCMC) to was used in the model to obtain samples from the posterior distributions of interest. @fig-trace-rhat-1 shows bouncing horizontal lines with overlap, and @fig-trace-rhat-2 shows R-hat close to one. Both indicate that there are no issues with the algorithm. 
 
