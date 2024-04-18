@@ -9,7 +9,6 @@
 #### Workspace setup ####
 library(tidyverse)
 library(dplyr)
-#install.packages("arrow")
 library(arrow)
 
 #### Clean data ####

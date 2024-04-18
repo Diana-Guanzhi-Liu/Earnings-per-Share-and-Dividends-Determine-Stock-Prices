@@ -11,12 +11,16 @@ library(dplyr)
 library(knitr)
 
 #### Simulate data ####
+#simulate the TIC symbol
 tic1 <- sample(letters, 100, TRUE)
 tic2 <- sample(letters, 100, TRUE)
 tic3 <- sample(letters, 100, TRUE)
 tic <- paste(tic1, tic2, tic3)
+
+#simulate binary dividend variable
 dividend <- c("yes", "no")
 
+#simulate rest of data
 financial_data <-
   tibble(
     tic,

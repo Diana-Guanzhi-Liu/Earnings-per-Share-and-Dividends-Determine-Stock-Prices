@@ -8,7 +8,7 @@
 
 #### Workspace setup ####
 library(tidyverse)
-
+library(arrow)
 
 #### Test data ####
 analysis_data <- read_parquet("outputs/data/analysis_data.parquet")

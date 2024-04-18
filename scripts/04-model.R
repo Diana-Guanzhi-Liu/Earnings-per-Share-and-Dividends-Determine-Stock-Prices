@@ -15,12 +15,16 @@ library(arrow)
 analysis_data <- read_parquet(here::here("outputs/data/analysis_data.parquet"))
 
 ### Model data ####
+#create simple linear regression model with only EPS as predictor variable
+#and stock price as dependent variable
 model_1 <-
   lm(
     Price ~ EPS,
     data = analysis_data
   )
 
+#create model with EPS and binary dividend variable as predictor variables and
+#Stock price as dependent variable
 model_2 <-
   stan_glm(
     formula = Price ~ EPS + Paid_Dividend,
