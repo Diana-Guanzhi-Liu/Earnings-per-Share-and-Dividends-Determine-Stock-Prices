@@ -1,8 +1,8 @@
 ---
-title: "What Determines Stock Prices?"
+title: "Earnings per Share and Dividends Determine Stock Prices"
 subtitle: "Analysis of the Relationship Between Stock Price, Earnings Per Share, and Dividends of the Largest 50 North American Companies from 2013 to 2023"
 author: Diana Liu
-thanks: "Code and data are available at: https://github.com/Diana-Guanzhi-Liu/What-Determines-Stock-Prices-"
+thanks: "Code and data are available at: https://github.com/Diana-Guanzhi-Liu/Earnings-per-Share-and-Dividends-Determine-Stock-Prices"
 date: today
 date-format: long
 abstract: "This study examines the relationship between Earnings per Share (EPS), dividends, and stock prices in publicly traded companies. Findings indicate a positive correlation between EPS and stock price, with each dollar increase in EPS associated with a $26.59 rise in stock price. Conversely, dividend payments are linked to a decrease in stock price, mitigating the impact of EPS on price. These insights enable investors to predict stock prices, informing their investment strategies, as well as guide managerial decisions balancing pleasing existing shareholders by paying dividends, ensuring long-term growth of the company, and keeping the stock attractive to new investors."
@@ -29,7 +29,7 @@ library(gt)
 ```
 
 # Introduction
-Public companies whose stock are traded on exchanges, must disclose certain financial metrics in their quarterly and yearly financial statements. Investors can then use these metrics to help inform their decision when selecting companies to invest in, their investment of buying shares represent a fractional ownership of the company. Some of the most important metrics investors look at are Net Income, Earnings Per Share (EPS), and Dividends [@CiteShakespeare]. In the data section, we discuss how EPS is a general measure of a firm's profitability, dividends are cash distributed to investors, and stock prices are determined by both the intrinsic value of the firm as well as market pressures like demand for the stock. Our estimand is the relationship between EPS and stock price as well has how this relationship is effected by dividends.
+Public companies whose stock are traded on exchanges, must disclose certain financial metrics in their quarterly and yearly financial statements. Investors can then use these metrics to help inform their decision when selecting companies to invest in, their investment of buying shares represent a fractional ownership of the company. Some of the most important metrics investors look at are Net Income, Earnings Per Share (EPS), and Dividends, but whether or not these metrics are actually able to be used to predict stock prices have been disputed [@CiteShakespeare]. In the data section, we discuss how EPS is a general measure of a firm's profitability, dividends are cash distributed to investors, and stock prices are determined by both the intrinsic value of the firm as well as market pressures like demand for the stock. Our estimand is the relationship between EPS and stock price as well has how this relationship is effected by dividends.
 
 In the model section, we construct two models with model 1 being a simple linear model between EPS and stock price to determine their relationship, and model 2 being a multivariable model that groups companies by those who paid dividends and those who did not. From the results section, model 1 found that there is a positive linear relationship between EPS and stock price with every dollar increase in EPS correlating with a 26.59 USD increase in stock price. We also determined that there is a negative relationship between paying dividends and stock price. In Model 2, if the company paid dividends, every dollar increase in EPS correlates with only a 25.59 USD increase in stock price.
 
@@ -54,9 +54,9 @@ Net income, EPS, and dividends are items that are found on financial statements.
 
 Net income is used to measure profitability or how much income the company keeps after expenses are paid. Higher net income means that the company is profitable by either earning more revenues or reducing expenses. Net income is expected to be positively correlated with price as investors want to invest in companies that are more profitable. Net income can be negative when the company has lost money. In our data set, it is measured in millions USD (x10^6). Net income is normally distributed with median of 7120M USD and right skew, mean of 11752 (@fig-distributions). Apple (AAPL) had the highest net income in the data set of 99803 achieved in 2022, and Berkshire Hathaway (BRK.B) had the lowest of -22819 in the same year (@tbl-summary-statistics).
 
-```{r}
+```{r, out.width="75%"}
 #| label: fig-EPS-boxplot
-#| fig-cap: "Boxplots of EPS grouped by dividends"
+#| fig-cap: "Boxplots of EPS grouped by dividends. EPS of companies that did not pay dividends has a larger interquartile range than EPS of companies that paid dividends. The mean and median EPS of companies that paid dividends is higher, suggesting that paying dividends is correlated with having higher EPS."
 #| echo: false
 EPS_boxplot <-
   analysis_data |> 
@@ -69,7 +69,6 @@ EPS_boxplot <-
 ylim1 = boxplot.stats(analysis_data$EPS)$stats[c(1, 5)]
 EPS_boxplot = EPS_boxplot + coord_cartesian(ylim = ylim1*1.05)
 EPS_boxplot
-
 ```
 
 EPS is a commonly used measure of a given company's value in USD; it is calculated net income divided by the number of shares. It is normally distributed and right skewed, with median 4.56 USD and mean 6.2 (@fig-distributions). Google (GOOGL) had the highest EPS of 112.2 in 2021, and Tesla (TSLA) had the lowest of -11.83 in 2017, meaning for each share Tesla lost 11.83 USD (@tbl-summary-statistics).
@@ -115,7 +114,7 @@ summary
 
 ```{r}
 #| label: fig-distributions
-#| fig-cap: "Price, EPS, Net_Income, and Dividends are all normally distributed with right skew"
+#| fig-cap: "Price, EPS, Net_Income, and Dividends are all normally distributed with right skew."
 #| echo: false
 #| warning: false
 #| message: false
@@ -164,9 +163,9 @@ In the second model, we add $X_2$ as a binary variable where yes signifies that 
 \end{align}
 
 ### Model justification
-We expect a positive linear relationship between EPS and stock price. This is because a higher EPS indicates greater value and investors should be willing to pay more for a company's shares if they think the company has higher profits relative to its share price. If a company has high EPS, they have greater amount of profit after expenses have been paid. Investors want to own profitable companies, so demand for this company's stock increases, driving up price as the number of stocks that are available to be bought remains the same. The opposite is true for unprofitable companies, if EPS is low or negative, investors may choose to sell off their shares even at a loss in order to prevent further losses should the stock price keep falling (@fig-bestfit). 
+We expect a positive linear relationship between EPS and stock price. This is because a higher EPS indicates greater value and investors should be willing to pay more for a company's shares if they think the company has higher profits relative to its share price. If a company has high EPS, they have greater amount of profit after expenses have been paid. Investors want to own profitable companies, so demand for this company's stock increases, driving up price as the number of stocks that are available to be bought remains the same. The opposite is true for unprofitable companies, if EPS is low or negative, investors may choose to sell off their shares even at a loss in order to prevent further losses should the stock price keep falling. 
 
-One might expect dividends to be positively correlated with stock price because investors desire an additional payment, but the opposite is true. This is because dividends paid out to shareholders is value that is taken out of the company, causing price, a reflection of the firm's value, to decrease (@fig-bestfit).
+One might expect dividends to be positively correlated with stock price because investors desire an additional payment, but the opposite is true. This is because dividends paid out to shareholders is value that is taken out of the company, causing price, a reflection of the firm's value, to decrease.
 
 We expect the effects of EPS and dividends to interact with each other, creating two potential outcomes for change in price. Companies that did not pay dividends are expected to have a larger increase in price for every additional dollar of EPS than companies that paid dividends.
 
@@ -188,18 +187,20 @@ summary(model_1)
 summary(model_2)
 ```
 
+In model 1, only the relationship between the dependent variable price and predictor variable EPS is analyzed. In the first column of @tbl-modelresults, we have a intercept of 27.25 and with standard error 11.47. The coefficient term $\beta_1$ is 26.59 with standard error 1.05 which shows the increase in price for every dollar increase in EPS. The slope can also be observed from @fig-bestfit as the dashed line with standard error as the shaded area around the dashed line. Positive slope and coefficient show a positive relationship between EPS and stock price. While most observations follow the linear relationship, there is some clustering between 0 to 10.
+
 ```{r}
 #| echo: false
 #| warning: false
 #| message: false
 #| label: fig-bestfit
-#| fig-cap: "Relationship between variables EPS and stock price"
+#| fig-cap: "Relationship between variables EPS and stock price. The coefficient or slope can be observed as the dashed line with standard error as the shaded area around the dashed line. Positive slope and coefficient show a positive linear relationship between EPS and stock price. While most observations follow the linear relationship, there is some clustering between 0 to 10."
 
 base_eps_plot <-
   analysis_data |> 
   ggplot(aes(x = EPS, y = Price)) +
   geom_point(alpha = 0.5) +
-  theme_minimal() +
+  theme_classic() +
   labs(x = "EPS",
        y = "Stock Price")
 
@@ -215,9 +216,7 @@ base_eps_plot +
   ylim(0, 2000)
 ```
 
-In model 1, only the relationship between the dependent variable price and predictor variable EPS is analyzed. In the first column of @tbl-modelresults, we have a intercept of 27.25 and with standard error 11.47. The coefficient term $\beta_1$ is 26.59 with standard error 1.05 which shows the increase in price for every dollar increase in EPS that can also be observed from @fig-bestfit as the dashed line with standard error as the shaded area around the dashed line. Positive slope and coefficient show a positive relationship between EPS and stock price. While most observations follow the linear relationship, there is some clustering between 0 to 10.
-
-```{r}
+```{r, out.width="75%"}
 #| echo: false
 #| eval: true
 #| label: fig-boxplot
@@ -241,7 +240,7 @@ dividends_plot
 #| echo: false
 #| eval: true
 #| label: fig-model-2
-#| fig-cap: "Relationship between EPS, dividends, and stock price."
+#| fig-cap: "Relationship between EPS, dividends, and stock price. Paying dividends has a negative relationship with price as stocks that paid dividends have median price around 100, significantly lower than stocks that paid no dividends with median price around 175. Stocks that did not pay dividends also have a significantly larger interquartile range for price of around 250 USD than stocks that did of 100."
 #| warning: false
 
 base <-
@@ -277,7 +276,7 @@ The second column of @tbl-modelresults shows that the new intercept is 172.05 US
 #| echo: false
 #| eval: true
 #| label: tbl-modelresults
-#| tbl-cap: "Effect of earnings per share and dividends on stock price."
+#| tbl-cap: "Effect of earnings per share and dividends on stock price. In model 1, there is an intercept of 27.25 and with standard error 11.47. The coefficient term is 26.59 with standard error 1.05. In model 2, the new intercept is 172.05 USD, and that the coefficient of paying dividends is -177.85. With the addition of the dividends variable, EPS of companies that paid dividends has changed to a coefficient of 25.59 "
 #| warning: false
 
 modelsummary(
@@ -404,7 +403,7 @@ posterior_vs_prior(model_2) +
 @fig-ppcheckandposteriorvsprior-2 compares priors with posteriors to see how much the estimates change once data are taken into account. Our priors and posteriors are quite similar, 
 
 ## Credible Intervals
-```{r}
+```{r, out.width="75%"}
 #| eval: true
 #| echo: false
 #| message: false
